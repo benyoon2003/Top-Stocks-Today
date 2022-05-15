@@ -1,64 +1,95 @@
 import string
 import praw
 from heapq import nlargest
+import tkinter as tk
+from tkinter import *
+
+class GUI:
+    def __int__(self):
+        self.selection = selection
+
+    def interface(self):
+        r = tk.Tk()
+        r.geometry('500x500')
+
+        menubutton = Menubutton(r, text="File", width=35)
+        menubutton.grid()
+        menubutton.menu = Menu(menubutton)
+        menubutton["menu"] = menubutton.menu
+        menubutton.menu.add_checkbutton(label="New file", variable=IntVar())
+        menubutton.menu.add_checkbutton(label="Save", variable=IntVar())
+        menubutton.menu.add_checkbutton(label="Save as", variable=IntVar())
+        menubutton.pack()
+
+        instructions = Label(r, text="Select one of the following subreddits to scrape")
+        wallst_button = tk.Button(r, text='r/wallstreetbets', width=15, command= lambda: p.scrape_and_rank('wallstreetbets'))
+        stocks_button = tk.Button(r, text='r/stocks', width=15, command= lambda: p.scrape_and_rank('stocks'))
+        stock_market_button = tk.Button(r, text='r/StockMarket', width=15, command= lambda: p.scrape_and_rank('StockMarket'))
+        stock_picks_button = tk.Button(r, text='r/Stock_Picks', width=15, command= lambda: p.scrape_and_rank('Stock_Picks'))
+
+        stocks = Label(r, text=f"The top three most discussed stocks currently are {p.first}, {p.second}, {p.third}.")
+
+        instructions.pack()
+        wallst_button.pack()
+        stocks_button.pack()
+        stock_market_button.pack()
+        stock_picks_button.pack()
+        stocks.pack()
+        r.mainloop()
 
 
-user = int(input('Enter what subreddit you would like to scrape: \n'
-             '1: wallstreetbets \n'
-             '2: stocks \n'
-             '3: StockMarket \n'
-             '4: Stock_Picks \n'))
-if user == 1:
-    pick = 'wallstreetbets'
-if user == 2:
-    pick = 'stocks'
-if user == 3:
-    pick = 'StockMarket'
-if user == 4:
-    pick = 'Stock_Picks'
+class back_end:
+    def __init__(self):
+        self.stocklst = []
+        self.first = None
+        self.second = None
+        self.third = None
 
-stocklst = []
-with open('nasdaq') as f:
-    for line in f:
-        x = line.split('|')
-        stocklst.append(x[0])
+    def create_stock_list(self):
+        with open('nasdaq') as f:
+            for line in f:
+                x = line.split('|')
+                self.stocklst.append(x[0])
 
 
-reddit_read_only = praw.Reddit(client_id="H1TTOQwe_0dTr91hPRbJ-Q",
-                               client_secret="wMHrUyvnROJkTcEL93ZVGP6it-kABw",
-                               user_agent="stockbot12")
+    def scrape_and_rank(self, pick):
+        reddit_read_only = praw.Reddit(client_id="H1TTOQwe_0dTr91hPRbJ-Q",
+                                       client_secret="wMHrUyvnROJkTcEL93ZVGP6it-kABw",
+                                       user_agent="stockbot12")
 
-subreddit = reddit_read_only.subreddit(pick)
-rawlst = []
+        subreddit = reddit_read_only.subreddit(pick)
+        rawlst = []
 
-for post in subreddit.hot(limit=100):
-    rawlst.append(post.title and post.selftext)
-y = (''.join([char for char in rawlst if char not in string.punctuation])).split()
+        for post in subreddit.hot(limit=100):
+            rawlst.append(post.title and post.selftext)
+        y = (''.join([char for char in rawlst if char not in string.punctuation])).split()
 
-rank = {}
+        rank = {}
 
-for word in y:
-    if word in stocklst:
-        if word in rank:
-            rank[word] += 1
-        else:
-            rank[word] = 1
+        for word in y:
+            if word in self.stocklst:
+                if word in rank:
+                    rank[word] += 1
+                else:
+                    rank[word] = 1
 
-for stock, count in rank.items():
-    print(stock, count)
+        res = nlargest(3, rank, key=rank.get)
+        self.first = res[0]
+        self.second = res[1]
+        self.third = res[2]
 
-res = nlargest(3, rank, key = rank.get)
-print(res)
+        print(res)
+
+
+
+
+p = back_end()
+p.create_stock_list()
+
+x = GUI()
+x.interface()
 
 
 #so far program return three most mentioned stocks mentioned in wallstreet bets by stock abbreviation
 #must turn everything into classes, create GUI, and return links and info about stock
-
-
-
-
-
-
-
-
 
