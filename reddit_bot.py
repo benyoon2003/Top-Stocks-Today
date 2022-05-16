@@ -15,6 +15,7 @@ class back_end:
         self.first_stock_info = None
         self.second_stock_info = None
         self.third_stock_info = None
+        self.userpick = None
 
     def get_first_stock(self):
         return self.first
@@ -41,6 +42,7 @@ class back_end:
                 self.stocklst.append(x[0])
 
     def scrape_and_rank(self, pick):
+        self.userpick = pick
         reddit_read_only = praw.Reddit(client_id="H1TTOQwe_0dTr91hPRbJ-Q",
                                        client_secret="wMHrUyvnROJkTcEL93ZVGP6it-kABw",
                                        user_agent="stockbot12")
@@ -81,7 +83,7 @@ class GUI:
         self.line4 = None
 
     def update_text(self):
-        self.stocks.config(text= f"The top three most discussed stocks currently are {p.get_first_stock()}, {p.get_second_stock()}, {p.get_third_stock()}. \n "
+        self.stocks.config(text= f"The top three most discussed stocks on r/{p.userpick} currently are {p.get_first_stock()}, {p.get_second_stock()}, {p.get_third_stock()}. \n "
                                f"Here is some info about these stocks:")
         self.stock1_info.config(text=f"{p.get_first_stock()}/{p.get_first_stock_info().info['longName']}")
         self.line1.config(text=f"Price: {p.get_first_stock_info().info['currentPrice']}\n"
@@ -104,7 +106,7 @@ class GUI:
                                f"Prev. Close: {p.get_second_stock_info().info['previousClose']}  52 Wk. Low: "
                                f"{p.get_second_stock_info().info['fiftyTwoWeekLow']}  52 Wk. High: "
                                f"{p.get_second_stock_info().info['fiftyTwoWeekHigh']}\n \n"
-                               f"{p.get_second_stock_info().info['longBusinessSummary']}", wraplength=600)
+                               f"{p.get_second_stock_info().info['longBusinessSummary']}\n\n\n", wraplength=600)
         self.stock3_info.config(text=f"{p.get_third_stock()}/{p.get_third_stock_info().info['longName']}")
         self.line3.config(text=f"Price: {p.get_third_stock_info().info['currentPrice']}\n"
                                f"Open: {p.get_third_stock_info().info['open']}  High: {p.get_third_stock_info().info['dayHigh']}    "
@@ -121,7 +123,6 @@ class GUI:
     def interface(self):
         r = tk.Tk()
         r.geometry('640x800')
-
 
         # menubutton = Menubutton(r, text="File", width=35)
         # menubutton.grid()
@@ -178,5 +179,6 @@ x.interface()
 #must return background info on the company
 #price per share, market cap, 52 wk high and low- can be found using
 #current event articles links- these are the top 3 articles that pop up
+#loading bar?
 
 #https://thecleverprogrammer.com/2020/08/22/real-time-stock-price-with-python/
