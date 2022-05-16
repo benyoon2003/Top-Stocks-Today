@@ -27,12 +27,10 @@ class back_end:
                 x = line.split('|')
                 self.stocklst.append(x[0])
 
-
     def scrape_and_rank(self, pick):
         reddit_read_only = praw.Reddit(client_id="H1TTOQwe_0dTr91hPRbJ-Q",
                                        client_secret="wMHrUyvnROJkTcEL93ZVGP6it-kABw",
                                        user_agent="stockbot12")
-
         subreddit = reddit_read_only.subreddit(pick)
         rawlst = []
 
@@ -103,6 +101,9 @@ x.interface()
 
 
 
-#GUI does not update after three stocks are loaded
-#must return links and info about stock
+#must return background info on the company
+#price per share, market cap, 52 wk high and low- can be found using
+#current event articles links- these are the top 3 articles that pop up
+
+#https://thecleverprogrammer.com/2020/08/22/real-time-stock-price-with-python/
 
