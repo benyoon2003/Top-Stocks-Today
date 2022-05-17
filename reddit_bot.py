@@ -95,7 +95,7 @@ class GUI:
                                f"Prev. Close: {p.get_first_stock_info().info['previousClose']}  52 Wk. Low: "
                                f"{p.get_first_stock_info().info['fiftyTwoWeekLow']}  52 Wk. High: "
                                f"{p.get_first_stock_info().info['fiftyTwoWeekHigh']}\n \n"
-                               f"{p.get_first_stock_info().info['longBusinessSummary']}\n\n\n", wraplength=600)
+                               f"{p.get_first_stock_info().info['longBusinessSummary']}\n\n", wraplength=1500)
         self.stock2_info.config(text=f"{p.get_second_stock()}/{p.get_second_stock_info().info['longName']}")
         self.line2.config(text=f"Price: {p.get_second_stock_info().info['currentPrice']}\n"
                                f"Open: {p.get_second_stock_info().info['open']}  High: {p.get_second_stock_info().info['dayHigh']}    "
@@ -106,7 +106,7 @@ class GUI:
                                f"Prev. Close: {p.get_second_stock_info().info['previousClose']}  52 Wk. Low: "
                                f"{p.get_second_stock_info().info['fiftyTwoWeekLow']}  52 Wk. High: "
                                f"{p.get_second_stock_info().info['fiftyTwoWeekHigh']}\n \n"
-                               f"{p.get_second_stock_info().info['longBusinessSummary']}\n\n\n", wraplength=600)
+                               f"{p.get_second_stock_info().info['longBusinessSummary']}\n\n", wraplength=1500)
         self.stock3_info.config(text=f"{p.get_third_stock()}/{p.get_third_stock_info().info['longName']}")
         self.line3.config(text=f"Price: {p.get_third_stock_info().info['currentPrice']}\n"
                                f"Open: {p.get_third_stock_info().info['open']}  High: {p.get_third_stock_info().info['dayHigh']}    "
@@ -117,12 +117,13 @@ class GUI:
                                f"Prev. Close: {p.get_third_stock_info().info['previousClose']}  52 Wk. Low: "
                                f"{p.get_third_stock_info().info['fiftyTwoWeekLow']}  52 Wk. High: "
                                f"{p.get_third_stock_info().info['fiftyTwoWeekHigh']}\n \n"
-                               f"{p.get_third_stock_info().info['longBusinessSummary']}", wraplength=250)
+                               f"{p.get_third_stock_info().info['longBusinessSummary']}", wraplength=1500)
 
 
     def interface(self):
         r = tk.Tk()
-        r.geometry('640x800')
+        r.geometry('1920x1080')
+        r.title('Top Stocks')
 
         # menubutton = Menubutton(r, text="File", width=35)
         # menubutton.grid()
@@ -134,10 +135,10 @@ class GUI:
         # menubutton.pack()
 
         instructions = Label(r, text="Select one of the following subreddits to scrape")
-        wallst_button = tk.Button(r, text='r/wallstreetbets', width=15, command= lambda: [p.scrape_and_rank('wallstreetbets'), x.update_text()])
-        stocks_button = tk.Button(r, text='r/stocks', width=15, command= lambda: [p.scrape_and_rank('stocks'), x.update_text()])
-        stock_market_button = tk.Button(r, text='r/StockMarket', width=15, command= lambda: [p.scrape_and_rank('StockMarket'), x.update_text()])
-        stock_picks_button = tk.Button(r, text='r/Stock_Picks', width=15, command= lambda: [p.scrape_and_rank('Stock_Picks'), x.update_text()])
+        wallst_button = tk.Button(r, text='r/wallstreetbets', width=15, command= lambda: [p.scrape_and_rank('wallstreetbets'), x.update_text()], bg= 'gray')
+        stocks_button = tk.Button(r, text='r/stocks', width=15, command= lambda: [p.scrape_and_rank('stocks'), x.update_text()], bg= 'gray')
+        stock_market_button = tk.Button(r, text='r/StockMarket', width=15, command= lambda: [p.scrape_and_rank('StockMarket'), x.update_text()], bg= 'gray')
+        stock_picks_button = tk.Button(r, text='r/Stock_Picks', width=15, command= lambda: [p.scrape_and_rank('Stock_Picks'), x.update_text()], bg= 'gray')
         self.stocks = Label(r, text="")
         space = Label(r, text= "")
         self.stock1_info = Label(r, text="")
