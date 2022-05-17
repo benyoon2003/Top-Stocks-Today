@@ -36,12 +36,20 @@ class back_end:
         return self.third_stock_info
 
     def create_stock_list(self):
+        """Opens the txt file of all public companies listed on the NASDAQ
+        :return: a list of all the stock abbreviations
+        """
         with open('nasdaq') as f:
             for line in f:
                 x = line.split('|')
                 self.stocklst.append(x[0])
 
     def scrape_and_rank(self, pick):
+        """Scrapes the selected subreddit and counts the number of times a stock abbreviation is mentioned
+        :param pick: a string
+        :return: first, second, and third most discussed stocks
+        """
+        # Creates PRAW instance
         self.userpick = pick
         reddit_read_only = praw.Reddit(client_id="H1TTOQwe_0dTr91hPRbJ-Q",
                                        client_secret="wMHrUyvnROJkTcEL93ZVGP6it-kABw",
@@ -49,23 +57,22 @@ class back_end:
         subreddit = reddit_read_only.subreddit(pick)
         rawlst = []
 
+        # Scrapes subreddit
         for post in subreddit.hot(limit=100):
             rawlst.append(post.title and post.selftext)
         y = (''.join([char for char in rawlst if char not in string.punctuation])).split()
-
         rank = {}
-
         for word in y:
             if word in self.stocklst:
                 if word in rank:
                     rank[word] += 1
                 else:
                     rank[word] = 1
-
         res = nlargest(3, rank, key=rank.get)
         self.first = res[0]
         self.second = res[1]
         self.third = res[2]
+        # Pulls stock info from yahoo finance
         self.first_stock_info = yahooFinance.Ticker(self.first)
         self.second_stock_info = yahooFinance.Ticker(self.second)
         self.third_stock_info = yahooFinance.Ticker(self.third)
@@ -83,8 +90,11 @@ class GUI:
         self.line4 = None
 
     def update_text(self):
-        self.stocks.config(text= f"The top three most discussed stocks on r/{p.userpick} currently are {p.get_first_stock()}, {p.get_second_stock()}, {p.get_third_stock()}. \n "
+        """Updates the text on the GUI when a subreddit is selected"""
+        self.stocks.config(text= f"The top three most discussed stocks on r/{p.userpick} currently are {p.get_first_stock()}, "
+                                 f"{p.get_second_stock()}, {p.get_third_stock()}. \n "
                                f"Here is some info about these stocks:")
+        # Configures tkinter labels to show stock info from yahoo finance
         self.stock1_info.config(text=f"{p.get_first_stock()}/{p.get_first_stock_info().info['longName']}")
         self.line1.config(text=f"Price: {p.get_first_stock_info().info['currentPrice']}\n"
                                f"Open: {p.get_first_stock_info().info['open']}  High: {p.get_first_stock_info().info['dayHigh']}    "
@@ -119,26 +129,20 @@ class GUI:
                                f"{p.get_third_stock_info().info['fiftyTwoWeekHigh']}\n \n"
                                f"{p.get_third_stock_info().info['longBusinessSummary']}", wraplength=1500)
 
-
     def interface(self):
+        """Initializes tkinter buttons and labels"""
         r = tk.Tk()
         r.geometry('1920x1080')
         r.title('Top Stocks')
-
-        # menubutton = Menubutton(r, text="File", width=35)
-        # menubutton.grid()
-        # menubutton.menu = Menu(menubutton)
-        # menubutton["menu"] = menubutton.menu
-        # menubutton.menu.add_checkbutton(label="New file", variable=IntVar())
-        # menubutton.menu.add_checkbutton(label="Save", variable=IntVar())
-        # menubutton.menu.add_checkbutton(label="Save as", variable=IntVar())
-        # menubutton.pack()
-
         instructions = Label(r, text="Select one of the following subreddits to scrape")
-        wallst_button = tk.Button(r, text='r/wallstreetbets', width=15, command= lambda: [p.scrape_and_rank('wallstreetbets'), x.update_text()], bg= 'gray')
-        stocks_button = tk.Button(r, text='r/stocks', width=15, command= lambda: [p.scrape_and_rank('stocks'), x.update_text()], bg= 'gray')
-        stock_market_button = tk.Button(r, text='r/StockMarket', width=15, command= lambda: [p.scrape_and_rank('StockMarket'), x.update_text()], bg= 'gray')
-        stock_picks_button = tk.Button(r, text='r/Stock_Picks', width=15, command= lambda: [p.scrape_and_rank('Stock_Picks'), x.update_text()], bg= 'gray')
+        wallst_button = tk.Button(r, text='r/wallstreetbets', width=15, command= lambda: [p.scrape_and_rank('wallstreetbets'),
+                                                                                          x.update_text()], bg= 'gray')
+        stocks_button = tk.Button(r, text='r/stocks', width=15, command= lambda: [p.scrape_and_rank('stocks'), x.update_text()],
+                                  bg= 'gray')
+        stock_market_button = tk.Button(r, text='r/StockMarket', width=15, command= lambda: [p.scrape_and_rank('StockMarket'),
+                                                                                             x.update_text()], bg= 'gray')
+        stock_picks_button = tk.Button(r, text='r/Stock_Picks', width=15, command= lambda: [p.scrape_and_rank('Stock_Picks'),
+                                                                                            x.update_text()], bg= 'gray')
         self.stocks = Label(r, text="")
         space = Label(r, text= "")
         self.stock1_info = Label(r, text="")
@@ -148,7 +152,6 @@ class GUI:
         self.line2 = Label(r, text="")
         self.line3 = Label(r, text="")
         self.line4 = Label(r, text="")
-
         instructions.pack()
         wallst_button.pack()
         stocks_button.pack()
@@ -163,8 +166,6 @@ class GUI:
         self.stock3_info.pack()
         self.line3.pack()
         self.line4.pack()
-
-
         r.mainloop()
 
 
@@ -175,11 +176,3 @@ p.create_stock_list()
 x = GUI()
 x.interface()
 
-
-
-#must return background info on the company
-#price per share, market cap, 52 wk high and low- can be found using
-#current event articles links- these are the top 3 articles that pop up
-#loading bar?
-
-#https://thecleverprogrammer.com/2020/08/22/real-time-stock-price-with-python/
