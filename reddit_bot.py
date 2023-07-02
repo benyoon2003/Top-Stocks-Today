@@ -6,6 +6,9 @@ from tkinter import *
 import yfinance as yahooFinance
 
 
+
+
+
 class back_end:
     def __init__(self):
         self.stocklst = []
